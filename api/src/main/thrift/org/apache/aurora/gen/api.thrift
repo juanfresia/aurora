@@ -213,8 +213,6 @@ struct MesosContainer {
   1: optional Image image
   /** the optional list of volumes to mount into the task. */
   2: optional list<Volume> volumes
-  /** the optional list of labels */
-  3: optional list<Label> labels
 }
 
 /** Describes a parameter passed to docker cli */

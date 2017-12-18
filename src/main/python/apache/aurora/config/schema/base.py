@@ -151,7 +151,6 @@ class Label(Struct):
 class Mesos(Struct):
   image = Choice([AppcImage, DockerImage])
   volumes = Default(List(Volume), [])
-  labels = Default(List(Label), [])
 
 class Container(Struct):
   docker = Docker
