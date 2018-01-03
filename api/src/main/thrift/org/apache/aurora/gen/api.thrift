@@ -201,12 +201,20 @@ union Image {
   2: AppcImage appc
 }
 
+/** A key-value pair */
+struct Label {
+    1: string key
+    2: string value
+}
+
 /** Describes a mesos container, this is the default */
 struct MesosContainer {
   /** the optional filesystem image to use when launching this task. */
   1: optional Image image
   /** the optional list of volumes to mount into the task. */
   2: optional list<Volume> volumes
+  /** the optional list of labels */
+  3: optional list<Label> labels
 }
 
 /** Describes a parameter passed to docker cli */

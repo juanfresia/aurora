@@ -44,6 +44,7 @@ from gen.apache.aurora.api.ttypes import (
     Image,
     JobConfiguration,
     JobKey,
+    Label,
     LimitConstraint,
     MesosContainer,
     Metadata,
@@ -168,11 +169,22 @@ def create_container_config(container):
   if isinstance(unwrapped, Mesos):
     image = image_to_thrift(unwrapped.image())
     volumes = volumes_to_thrift(unwrapped.volumes())
+    labels = labels_to_thrift(unwrapped.labels())
 
-    return Container(MesosContainer(image, volumes), None)
+    return Container(MesosContainer(image, volumes, labels), None)
 
   raise InvalidConfig('If a container is specified it must set one type.')
 
+def labels_to_thrift(labels):
+    thrift_labels = []
+    for l in labels:
+        thrift_labels.append(
+            Label(
+                key=fully_interpolated(l.key()),
+                value=fully_interpolated(l.value())
+            )
+        )
+    return thrift_labels
 
 def volumes_to_thrift(volumes):
   thrift_volumes = []

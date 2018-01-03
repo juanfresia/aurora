@@ -186,6 +186,9 @@ public interface MesosTaskFactory {
       }
 
       if (config.getContainer().isSetMesos()) {
+        LOG.info("About to launch a Mesos container!");
+        LOG.info("Image is: {}", config.getContainer().getMesos().getImage());
+
         ExecutorInfo.Builder executorInfoBuilder = configureTaskForExecutor(task, acceptedOffer);
 
         Optional<ContainerInfo.Builder> containerInfoBuilder = configureTaskForImage(
@@ -196,6 +199,8 @@ public interface MesosTaskFactory {
         }
 
         taskBuilder.setExecutor(executorInfoBuilder.build());
+
+
       } else if (config.getContainer().isSetDocker()) {
         IDockerContainer dockerContainer = config.getContainer().getDocker();
         if (config.isSetExecutorConfig()) {

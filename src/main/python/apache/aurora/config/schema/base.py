@@ -123,7 +123,6 @@ class Parameter(Struct):
   name = Required(String)
   value = Required(String)
 
-
 class Docker(Struct):
   image = Required(String)
   parameters = Default(List(Parameter), [])
@@ -145,14 +144,17 @@ class Volume(Struct):
   host_path = Required(String)
   mode = Required(Mode)
 
+class Label(Struct):
+  key = Required(String)
+  value = Required(String)
+
 class Mesos(Struct):
   image = Choice([AppcImage, DockerImage])
   volumes = Default(List(Volume), [])
-
+  labels = Default(List(Label), [])
 
 class Container(Struct):
   docker = Docker
-
 
 class PartitionPolicy(Struct):
   reschedule = Default(Boolean, True)
