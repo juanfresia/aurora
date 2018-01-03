@@ -192,6 +192,7 @@ class MesosJob(Struct):
   # TODO(wickman) Make Default(Any, LifecycleConfig()) once pystachio #17 is addressed.
   lifecycle                  = Default(LifecycleConfig, DefaultLifecycleConfig)
   task_links                 = Map(String, String)  # Unsupported.  See AURORA-739
+  labels                     = Default(List(Label), [])
 
   enable_hooks = Default(Boolean, False)  # enable client API hooks; from env python-list 'hooks'
 

@@ -34,7 +34,8 @@ jobs = [
     role = 'www-data',
     name = 'hello_docker_image',
     task = task,
-    container = Mesos(image=DockerImage(name='debian', tag='jessie'), labels=[Label(key='hola', value='chau'), Label(key='otra', value='label')])
+    labels=[Label(key='plugin', value='routed'), Label(key="ip", value="#{ip}")],
+    container = Mesos(image=DockerImage(name='debian', tag='jessie'))
   )
 ]
 

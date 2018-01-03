@@ -288,6 +288,9 @@ struct TaskConfig {
  /** Policy for how to deal with task partitions */
  34: optional PartitionPolicy partitionPolicy
 
+ /** Task labels */
+ 35: optional list<Label> labels
+ 
  // This field is deliberately placed at the end to work around a bug in the immutable wrapper
  // code generator.  See AURORA-1185 for details.
  /** the container the task should use to execute */
