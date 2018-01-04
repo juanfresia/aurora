@@ -200,7 +200,6 @@ public interface MesosTaskFactory {
 
         taskBuilder.setExecutor(executorInfoBuilder.build());
 
-
       } else if (config.getContainer().isSetDocker()) {
         IDockerContainer dockerContainer = config.getContainer().getDocker();
         if (config.isSetExecutorConfig()) {
@@ -347,6 +346,11 @@ public interface MesosTaskFactory {
       config.getMetadata().stream().forEach(m -> labelsBuilder.addLabels(Label.newBuilder()
           .setKey(METADATA_LABEL_PREFIX + m.getKey())
           .setValue(m.getValue())
+          .build()));
+
+      config.getLabels().stream().forEach(l -> labelsBuilder.addLabels(Label.newBuilder()
+          .setKey(l.getKey())
+          .setValue(l.getValue())
           .build()));
 
       taskBuilder.setLabels(labelsBuilder);
