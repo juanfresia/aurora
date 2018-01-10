@@ -24,8 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 
 import org.apache.aurora.scheduler.base.JobKeys;
 import org.apache.aurora.scheduler.storage.Storage;
@@ -100,7 +99,30 @@ public class StructDump extends JerseyTemplateServlet {
             .map(IJobConfiguration::newBuilder));
   }
 
-  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+  private static final Gson GSON = new GsonBuilder()
+      .setPrettyPrinting()
+      .setExclusionStrategies(new ExclusionStrategy() {
+        @Override
+        public boolean shouldSkipField(FieldAttributes f) {
+          if ((f.getName().startsWith("_")) || (f.getDeclaredClass().getName().contains("$_Fields"))) {
+            return true;
+          }
+          return false;
+        }
+
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+          return false;
+        }
+      })
+      .setFieldNamingStrategy(f -> {
+        switch (f.getName()) {
+          case "setField_": return "key";
+          case "value_": return "value";
+        }
+        return f.getName();
+      })
+      .create();
 
   private Response dumpEntity(String id, Quiet<Optional<? extends TBase<?, ?>>> work) {
     return fillTemplate(template -> {
