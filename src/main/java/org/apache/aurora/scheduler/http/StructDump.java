@@ -24,7 +24,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.google.gson.*;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.apache.aurora.scheduler.base.JobKeys;
 import org.apache.aurora.scheduler.storage.Storage;
@@ -104,7 +107,10 @@ public class StructDump extends JerseyTemplateServlet {
       .setExclusionStrategies(new ExclusionStrategy() {
         @Override
         public boolean shouldSkipField(FieldAttributes f) {
-          if ((f.getName().startsWith("_")) || (f.getDeclaredClass().getName().contains("$_Fields"))) {
+          if (f.getName().startsWith("_")) {
+            return true;
+          }
+          if (f.getDeclaredClass().getName().contains("$_Fields")) {
             return true;
           }
           return false;
@@ -119,8 +125,8 @@ public class StructDump extends JerseyTemplateServlet {
         switch (f.getName()) {
           case "setField_": return "key";
           case "value_": return "value";
+          default: return f.getName();
         }
-        return f.getName();
       })
       .create();
 
