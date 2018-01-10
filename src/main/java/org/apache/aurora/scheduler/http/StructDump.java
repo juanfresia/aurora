@@ -110,10 +110,7 @@ public class StructDump extends JerseyTemplateServlet {
           if (f.getName().startsWith("_")) {
             return true;
           }
-          if (f.getDeclaredClass().getName().contains("$_Fields")) {
-            return true;
-          }
-          return false;
+          return f.getDeclaredClass().getName().contains("$_Fields");
         }
 
         @Override
