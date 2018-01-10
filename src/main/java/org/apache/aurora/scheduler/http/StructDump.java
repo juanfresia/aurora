@@ -101,30 +101,29 @@ public class StructDump extends JerseyTemplateServlet {
   }
 
   private static final Gson GSON = new GsonBuilder()
-          .setPrettyPrinting()
-          .setExclusionStrategies(new ExclusionStrategy() {
-            @Override
-            public boolean shouldSkipField(FieldAttributes f) {
-              if (f.getName().startsWith("_")) return true;
-              if (f.getDeclaredClass().getName().contains("$_Fields")) return true;
-              return false;
-            }
-            @Override
-            public boolean shouldSkipClass(Class<?> clazz) {
-              return false;
-            }
-          })
-          .setFieldNamingStrategy(new FieldNamingStrategy() {
-            @Override
-            public String translateName(Field f) {
-              switch (f.getName()) {
-                case "setField_": return "key";
-                case "value_": return "value";
-              }
-              return f.getName();
-            }
-          })
-          .create();
+      .setPrettyPrinting()
+      .setExclusionStrategies(new ExclusionStrategy() {
+        @Override
+        public boolean shouldSkipField(FieldAttributes f) {
+          if ((f.getName().startsWith("_")) || (f.getDeclaredClass().getName().contains("$_Fields"))) {
+            return true;
+          }
+          return false;
+        }
+
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+          return false;
+        }
+      })
+      .setFieldNamingStrategy(f -> {
+        switch (f.getName()) {
+          case "setField_": return "key";
+          case "value_": return "value";
+        }
+        return f.getName();
+      })
+      .create();
 
   private Response dumpEntity(String id, Quiet<Optional<? extends TBase<?, ?>>> work) {
     return fillTemplate(template -> {
