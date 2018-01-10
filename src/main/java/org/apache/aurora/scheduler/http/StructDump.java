@@ -23,8 +23,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import com.google.common.base.Optional;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 
 import org.apache.aurora.scheduler.base.JobKeys;
 import org.apache.aurora.scheduler.storage.Storage;
@@ -33,6 +32,8 @@ import org.apache.aurora.scheduler.storage.entities.IJobConfiguration;
 import org.apache.aurora.scheduler.storage.entities.IJobKey;
 import org.apache.aurora.scheduler.storage.entities.IScheduledTask;
 import org.apache.thrift.TBase;
+
+import java.lang.reflect.Field;
 
 import static java.util.Objects.requireNonNull;
 
@@ -99,7 +100,31 @@ public class StructDump extends JerseyTemplateServlet {
             .transform(IJobConfiguration::newBuilder));
   }
 
-  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+  private static final Gson GSON = new GsonBuilder()
+          .setPrettyPrinting()
+          .setExclusionStrategies(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes f) {
+              if (f.getName().startsWith("_")) return true;
+              if (f.getDeclaredClass().getName().contains("$_Fields")) return true;
+              return false;
+            }
+            @Override
+            public boolean shouldSkipClass(Class<?> clazz) {
+              return false;
+            }
+          })
+          .setFieldNamingStrategy(new FieldNamingStrategy() {
+            @Override
+            public String translateName(Field f) {
+              switch (f.getName()) {
+                case "setField_": return "key";
+                case "value_": return "value";
+              }
+              return f.getName();
+            }
+          })
+          .create();
 
   private Response dumpEntity(String id, Quiet<Optional<? extends TBase<?, ?>>> work) {
     return fillTemplate(template -> {
