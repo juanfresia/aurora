@@ -13,7 +13,6 @@
  */
 package org.apache.aurora.scheduler.http;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
@@ -32,22 +31,21 @@ import static org.junit.Assert.assertFalse;
 public class StructDumpTest extends AbstractJettyTest {
 
   private static final String SLAVE_HOST = "fakehost";
-  private static final int PORT = 50000;
+  private static final String FAKE_TASKID = "fake-task-id";
 
   private static final IScheduledTask TASK = IScheduledTask.build(
       new ScheduledTask()
           .setStatus(ScheduleStatus.RUNNING)
           .setAssignedTask(
               new AssignedTask()
-                  .setTaskId("fake-task-id")
+                  .setTaskId(FAKE_TASKID)
                   .setTask(new TaskConfig()
                       .setResources(ImmutableSet.of(
                           Resource.numCpus(1),
                           Resource.ramMb(4000),
                           Resource.diskMb(10000)
                           )))
-                  .setSlaveHost(SLAVE_HOST)
-                  .setAssignedPorts(ImmutableMap.of("http", PORT))));
+                  .setSlaveHost(SLAVE_HOST)));
 
   @Test
   public void testGetUsage() {
@@ -55,17 +53,18 @@ public class StructDumpTest extends AbstractJettyTest {
 
     ClientResponse response = getPlainRequestBuilder("/structdump")
         .get(ClientResponse.class);
+
     assertEquals(Status.BAD_REQUEST.getStatusCode(), response.getStatus());
   }
 
   @Test
   public void testTaskConfigDoesNotIncludeMetadata() {
     storage.expectOperations();
-    storage.expectTaskFetch("fake-task-id", TASK);
+    storage.expectTaskFetch(FAKE_TASKID, TASK);
 
     replayAndStart();
 
-    ClientResponse response = getPlainRequestBuilder("/structdump/task/fake-task-id")
+    ClientResponse response = getPlainRequestBuilder("/structdump/task/" + FAKE_TASKID)
             .get(ClientResponse.class);
 
     String htmlResponse = response.getEntity(String.class);
@@ -76,14 +75,15 @@ public class StructDumpTest extends AbstractJettyTest {
   @Test
   public void testTaskConfigFieldRename() {
     storage.expectOperations();
-    storage.expectTaskFetch("fake-task-id", TASK);
+    storage.expectTaskFetch(FAKE_TASKID, TASK);
 
     replayAndStart();
 
-    ClientResponse response = getPlainRequestBuilder("/structdump/task/fake-task-id")
+    ClientResponse response = getPlainRequestBuilder("/structdump/task/" + FAKE_TASKID)
             .get(ClientResponse.class);
 
     String htmlResponse = response.getEntity(String.class);
+
     assertEquals(Status.OK.getStatusCode(), response.getStatus());
     assertFalse(htmlResponse.contains("setField_"));
     assertFalse(htmlResponse.contains("value_"));
