@@ -30,6 +30,7 @@ import org.apache.aurora.gen.DockerContainer;
 import org.apache.aurora.gen.DockerImage;
 import org.apache.aurora.gen.DockerParameter;
 import org.apache.aurora.gen.Image;
+import org.apache.aurora.gen.Label;
 import org.apache.aurora.gen.MesosContainer;
 import org.apache.aurora.gen.ServerInfo;
 import org.apache.aurora.gen.TaskConfig;
@@ -88,22 +89,37 @@ public class MesosTaskFactoryImplTest extends EasyMockTest {
       TaskTestUtil.makeConfig(TaskTestUtil.JOB)
           .newBuilder()
           .setContainer(Container.mesos(new MesosContainer())));
+
   private static final IAssignedTask TASK = IAssignedTask.build(new AssignedTask()
       .setInstanceId(2)
       .setTaskId("task-id")
       .setAssignedPorts(ImmutableMap.of("http", 80))
       .setTask(TASK_CONFIG.newBuilder()));
+
   private static final IAssignedTask TASK_WITH_DOCKER = IAssignedTask.build(TASK.newBuilder()
       .setTask(
           new TaskConfig(TASK.getTask().newBuilder())
               .setContainer(Container.docker(
                   new DockerContainer("testimage")))));
+
   private static final IAssignedTask TASK_WITH_DOCKER_PARAMS = IAssignedTask.build(TASK.newBuilder()
       .setTask(
           new TaskConfig(TASK.getTask().newBuilder())
               .setContainer(Container.docker(
                   new DockerContainer("testimage").setParameters(
                       ImmutableList.of(new DockerParameter("label", "testparameter")))))));
+
+  private static final String TEST_LABEL_KEY_1 = "testkey";
+  private static final String TEST_LABEL_VALUE_1 = "testvalue";
+  private static final String TEST_LABEL_KEY_2 = "testkey2";
+  private static final String TEST_LABEL_VALUE_2 = "testvalue2";
+  private static final IAssignedTask TASK_WITH_LABELS = IAssignedTask.build(TASK.newBuilder()
+      .setTask(
+          new TaskConfig(TASK.getTask().newBuilder())
+              .setLabels(ImmutableList.of(
+                  new Label().setKey(TEST_LABEL_KEY_1).setValue(TEST_LABEL_VALUE_1),
+                  new Label().setKey(TEST_LABEL_KEY_2).setValue(TEST_LABEL_VALUE_2)
+              ))));
 
   private static final ExecutorSettings EXECUTOR_SETTINGS_WITH_VOLUMES = new ExecutorSettings(
       ImmutableMap.<String, ExecutorConfig>builder().
@@ -420,6 +436,32 @@ public class MesosTaskFactoryImplTest extends EasyMockTest {
 
     assertTrue(task.getLabels().getLabelsList().stream().anyMatch(
         l -> l.getKey().equals(TIER_LABEL) && l.getValue().equals(PROD_TIER_NAME)));
+  }
+
+  @Test
+  public void testCustomLabels() {
+    taskFactory = new MesosTaskFactoryImpl(config, SERVER_INFO);
+
+    control.replay();
+
+    TaskInfo task = taskFactory.createFrom(TASK_WITH_LABELS, OFFER_THERMOS_EXECUTOR, false);
+
+    assertTrue(task.getLabels().getLabelsList().stream().anyMatch(
+            l -> l.getKey().equals(TEST_LABEL_KEY_1) && l.getValue().equals(TEST_LABEL_VALUE_1)));
+    assertTrue(task.getLabels().getLabelsList().stream().anyMatch(
+            l -> l.getKey().equals(TEST_LABEL_KEY_2) && l.getValue().equals(TEST_LABEL_VALUE_2)));
+  }
+
+  @Test
+  public void testTierLabelsWithCustomLabels() {
+    taskFactory = new MesosTaskFactoryImpl(config, SERVER_INFO);
+
+    control.replay();
+
+    TaskInfo task = taskFactory.createFrom(TASK_WITH_LABELS, OFFER_THERMOS_EXECUTOR, false);
+
+    assertTrue(task.getLabels().getLabelsList().stream().anyMatch(
+            l -> l.getKey().equals(TIER_LABEL) && l.getValue().equals(PROD_TIER_NAME)));
   }
 
   @Test
