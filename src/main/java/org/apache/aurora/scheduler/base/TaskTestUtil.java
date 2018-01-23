@@ -28,6 +28,7 @@ import org.apache.aurora.gen.Container._Fields;
 import org.apache.aurora.gen.DockerContainer;
 import org.apache.aurora.gen.DockerParameter;
 import org.apache.aurora.gen.Identity;
+import org.apache.aurora.gen.Label;
 import org.apache.aurora.gen.LimitConstraint;
 import org.apache.aurora.gen.MesosFetcherURI;
 import org.apache.aurora.gen.Metadata;
@@ -151,7 +152,8 @@ public final class TaskTestUtil {
             Resource.numCpus(1.0),
             Resource.ramMb(1024),
             Resource.diskMb(1024),
-            Resource.namedPort("http"))));
+            Resource.namedPort("http")))
+        .setLabels(ImmutableList.of(new Label("key", "value"))));
   }
 
   public static IScheduledTask makeTask(String id, IJobKey job) {
