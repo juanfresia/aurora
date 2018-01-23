@@ -26,6 +26,7 @@ from apache.aurora.config.schema.base import (
     DockerImage,
     HealthCheckConfig,
     Job,
+    Label,
     Mesos,
     Metadata,
     Mode,
@@ -92,11 +93,15 @@ def test_config_with_tier():
   job = convert_pystachio_to_thrift(config)
   assert job.taskConfig.tier == 'devel'
 
+
 def test_config_with_labels():
-  config = HELLO_WORLD(labels=[Label(key='a', value='label'), Label(key="other", value="label")])
+  config = HELLO_WORLD(labels=[Label(key='a', value='label'), Label(key='other', value='label')])
   job = convert_pystachio_to_thrift(config)
+  print(job.taskConfig.labels)
+  print(Label(key='a', value='label') in job.taskConfig.labels)
   assert Label(key='a', value='label') in list(job.taskConfig.labels)
-  assert Label(key='other', value='label') in list(job.taskConfig.labels)
+  assert Label(key='other', value='label') in job.taskConfig.labels
+
 
 def test_config_with_docker_image():
   image_name = 'some-image'

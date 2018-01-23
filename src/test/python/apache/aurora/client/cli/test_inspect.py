@@ -139,6 +139,7 @@ Process 'process':
         "role": "bozo",
         "contact": "bozo@the.clown",
         "metadata": [],
+        "labels": [],
         "lifecycle": {
             "http": {
                 "graceful_shutdown_endpoint": "/quitquitquit",

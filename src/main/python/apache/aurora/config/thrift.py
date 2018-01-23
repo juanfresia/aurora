@@ -173,16 +173,18 @@ def create_container_config(container):
 
   raise InvalidConfig('If a container is specified it must set one type.')
 
+
 def labels_to_thrift(labels):
-    thrift_labels = []
-    for l in labels:
-        thrift_labels.append(
-            Label(
-                key=fully_interpolated(l.key()),
-                value=fully_interpolated(l.value())
-            )
-        )
-    return thrift_labels
+  thrift_labels = []
+  for l in labels:
+    thrift_labels.append(
+      Label(
+          key=fully_interpolated(l.key()),
+          value=fully_interpolated(l.value())
+      )
+    )
+  return thrift_labels
+
 
 def volumes_to_thrift(volumes):
   thrift_volumes = []
