@@ -34,7 +34,8 @@ jobs = [
     role = 'www-data',
     name = 'hello_docker_image',
     task = task,
-    labels=[Label(key='plugin', value='routed'), Label(key="ip", value="#{ip}")],
+    labels=[Label(key='org.apache.aurora.jobDescription', value='Just a test job'),
+            Label(key='org.apache.aurora.importantLabel', value='importantValue')],
     container = Mesos(image=DockerImage(name='debian', tag='jessie'))
   )
 ]
