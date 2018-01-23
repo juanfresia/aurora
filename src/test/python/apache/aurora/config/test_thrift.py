@@ -92,6 +92,11 @@ def test_config_with_tier():
   job = convert_pystachio_to_thrift(config)
   assert job.taskConfig.tier == 'devel'
 
+def test_config_with_labels():
+  config = HELLO_WORLD(labels=[Label(key='a', value='label'), Label(key="other", value="label")])
+  job = convert_pystachio_to_thrift(config)
+  assert Label(key='a', value='label') in list(job.taskConfig.labels)
+  assert Label(key='other', value='label') in list(job.taskConfig.labels)
 
 def test_config_with_docker_image():
   image_name = 'some-image'

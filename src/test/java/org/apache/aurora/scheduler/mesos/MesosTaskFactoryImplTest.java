@@ -447,9 +447,9 @@ public class MesosTaskFactoryImplTest extends EasyMockTest {
     TaskInfo task = taskFactory.createFrom(TASK_WITH_LABELS, OFFER_THERMOS_EXECUTOR, false);
 
     assertTrue(task.getLabels().getLabelsList().stream().anyMatch(
-            l -> l.getKey().equals(TEST_LABEL_KEY_1) && l.getValue().equals(TEST_LABEL_VALUE_1)));
+        l -> l.getKey().equals(TEST_LABEL_KEY_1) && l.getValue().equals(TEST_LABEL_VALUE_1)));
     assertTrue(task.getLabels().getLabelsList().stream().anyMatch(
-            l -> l.getKey().equals(TEST_LABEL_KEY_2) && l.getValue().equals(TEST_LABEL_VALUE_2)));
+        l -> l.getKey().equals(TEST_LABEL_KEY_2) && l.getValue().equals(TEST_LABEL_VALUE_2)));
   }
 
   @Test
@@ -461,7 +461,7 @@ public class MesosTaskFactoryImplTest extends EasyMockTest {
     TaskInfo task = taskFactory.createFrom(TASK_WITH_LABELS, OFFER_THERMOS_EXECUTOR, false);
 
     assertTrue(task.getLabels().getLabelsList().stream().anyMatch(
-            l -> l.getKey().equals(TIER_LABEL) && l.getValue().equals(PROD_TIER_NAME)));
+        l -> l.getKey().equals(TIER_LABEL) && l.getValue().equals(PROD_TIER_NAME)));
   }
 
   @Test

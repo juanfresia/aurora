@@ -113,7 +113,8 @@ final class Fixtures {
         .setResources(ImmutableSet.of(
             Resource.numCpus(1),
             Resource.ramMb(1024),
-            Resource.diskMb(1024)));
+            Resource.diskMb(1024)))
+        .setLabels(ImmutableList.of());
   }
 
   static TaskConfig nonProductionTask() {
