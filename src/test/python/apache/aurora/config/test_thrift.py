@@ -95,12 +95,11 @@ def test_config_with_tier():
 
 
 def test_config_with_labels():
-  config = HELLO_WORLD(labels=[Label(key='a', value='label'), Label(key='other', value='label')])
+  config = HELLO_WORLD(labels=[Label(key='a', value='label')])
   job = convert_pystachio_to_thrift(config)
-  print(job.taskConfig.labels)
-  print(Label(key='a', value='label') in job.taskConfig.labels)
-  assert Label(key='a', value='label') in list(job.taskConfig.labels)
-  assert Label(key='other', value='label') in job.taskConfig.labels
+  label = job.taskConfig.labels[0]
+  assert label.key == 'a'
+  assert label.value == 'label'
 
 
 def test_config_with_docker_image():
